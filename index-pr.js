@@ -1,5 +1,8 @@
 // Promises example
 "use strict";
+"use strict";
+
+const fetch = require("node-fetch");
 
 const weather = require("./weather");
 const renderer = require("./renderer");
@@ -7,23 +10,27 @@ const renderer = require("./renderer");
 const rawInputs = process.argv;
 const cleanedInputs = rawInputs.slice(2);
 
-const inputCity = cleanedInputs[0];
+const pokeId = cleanedInputs[0];
 
 weather
-  .getWeatherForCity(inputCity)
-  .then((weatherData) => {
-    if (!weatherData.success) {
-      renderer.renderError(weatherData.error);
+  .getPoke(pokeId)
+  .then((poke) => {
+    if (!poke.success) {
+      renderer.renderError(poke.error);
       return;
     }
 
-    const location = weatherData.data.location;
-    const condition = weatherData.data.condition;
-
-    renderer.renderSuccess(
-      `${location.name}, ${location.country}`,
-      `${condition.text}`
+    const id = poke.data.id;
+    const name = poke.data.name;
+    const height = poke.data.height;
+    const weight = poke.data.weight;
+    const pokeUrl = "https://pokeapi.co/api/v2/pokemon/" + name;
+    console.log(
+      `Pokemon with id: ${id} has name: ${name} and its weight and height are ${weight}, ${height}`
     );
+    console.log(`You can download it via ${pokeUrl}`);
+
+    renderer.renderSuccess(`${name}, ${height}`, `${weight}`);
   })
   .catch((error) => {
     renderer.renderError(error.message);
